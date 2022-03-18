@@ -4,24 +4,24 @@ import boto3
 from airflow.models import Variable
 
 aws_access_key_id = Variable.get("aws_access_key_id")
-aws_secret_access_key = Variable.get("aws_secret_access_key")
+aws_secret_access_key_id = Variable.get("aws_secret_access_key_id")
 
 
 # coloque sua região abaixo
 
-client = boto3.client("emr", region_name="us-east-1",
+client = boto3.client("emr", region_name="sa-east-1",
                     aws_access_key_id=aws_access_key_id,
-                    aws_secret_access_key=aws_secret_access_key)
+                    aws_secret_access_key=aws_secret_access_key_id)
 
 s3client = boto3.client("s3", aws_access_key_id=aws_access_key_id,
-                          aws_secret_access_key=aws_secret_access_key)
+                          aws_secret_access_key=aws_secret_access_key_id)
 
 
 # verificar parâmetro 'owner' abaixo, adaptar se necessário
 
 # Usando a novíssima Taskflow API
 default_args = {
-    'owner': 'Helton Harada',
+    'owner': 'gustavo sena',
     "depends_on_past": False,
     "start_date": days_ago(2),
     "email": ["airflow@airflow.com"],
@@ -39,12 +39,12 @@ def pipeline_enem():
     def emr_process_enem_data():
         cluster_id = client.run_job_flow(
             # verificar nome do cluster e adaptar, se necessário
-            Name='EMR-Helton-IGTI',
+            Name='EMR-gustavo-IGTI',
             ServiceRole='EMR_DefaultRole',
             JobFlowRole='EMR_EC2_DefaultRole',
             VisibleToAllUsers=True,
             # verificar endereço s3 e adaptar, se necessário
-            LogUri='s3://datalake-helton-igti-edc-tf/emr-logs',
+            LogUri='s3://datalake-gustavo-igti-edc-tf/emr-logs',
             ReleaseLabel='emr-6.3.0',
             # ReleaseLabel='emr-6.5.0',
             Instances={
@@ -65,11 +65,11 @@ def pipeline_enem():
                     }
                 ],
                 # verificar Ec2KeyName e adaptar, se necessário
-                'Ec2KeyName': 'helton-igti-teste',
+                'Ec2KeyName': 'gustavo-igti-teste',
                 'KeepJobFlowAliveWhenNoSteps': True,
                 'TerminationProtected': False,
                 # adaptar sua subnet
-                'Ec2SubnetId': 'subnet-03a347a88e2a1f2fa'
+                'Ec2SubnetId': 'subnet-00f2b6c87578c1bc5'
             },
 
             Applications=[{'Name': 'Spark'}],
@@ -121,7 +121,7 @@ def pipeline_enem():
                             '--master', 'yarn',
                             '--deploy-mode', 'cluster',
                             # verificar endereço s3 e adaptar, se necessário
-                            's3://datalake-helton-igti-edc-tf/emr-code/pyspark/01_delta_spark_insert.py'
+                            's3://datalake-gustavo-igti-edc-tf/emr-code/pyspark/01_delta_spark_insert.py'
                         ]
                 }
             }],
@@ -165,7 +165,7 @@ def pipeline_enem():
                                 '--master', 'yarn',
                                 '--deploy-mode', 'cluster',
                                 # verificar endereço s3 e adaptar, se necessário
-                                's3://datalake-helton-igti-edc-tf/emr-code/pyspark/02_delta_spark_upsert.py'
+                                's3://datalake-gustavo-igti-edc-tf/emr-code/pyspark/02_delta_spark_upsert.py'
                             ]
                     }
                 }]
