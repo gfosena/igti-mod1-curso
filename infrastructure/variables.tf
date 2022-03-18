@@ -11,7 +11,7 @@ variable "lambda_function_name" {
 #criação de novas variáveis para o Use case 3 - Pipelines com Airflow
 
 variable "key_pair_name" {
-  default = "gustavo-igti-teste"
+  default = "gustavo-igti-teste2"
 }
 
 variable "airflow_subnet_id" {
